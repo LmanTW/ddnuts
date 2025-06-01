@@ -1,0 +1,8 @@
+Version: <version>
+Architecture: <architecture>
+
+Package: ddnuts
+Description: A tool for updating cloudflare DNS reords.
+Maintainer: lmantw2009@gmail.com
+
+Depends: systemd
