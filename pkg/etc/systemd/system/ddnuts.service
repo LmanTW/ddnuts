@@ -4,7 +4,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ddnuts
+ExecStart=/usr/bin/ddnuts config=/etc/ddnuts.conf
 User=root
 Restart=always
 

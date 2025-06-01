@@ -22,11 +22,9 @@ Download the package:
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 > [!NOTE]
-> The ddnuts package will start a system service, and automatically create a config file at the default location.
+> The ddnuts package will start a system service, and create a config file at `/etc/ddnuts.conf`.
 
 ## Conguration
-
-By default, the location of the config file is `/etc/ddnuts.conf` on Linux and macOS, and next to the executable on Windows. You can specify the path of the config file by passing the `config=<path>` option.
 
 To add a domain to update, specify the domain and options:
 
@@ -51,3 +49,6 @@ You can also set global options by putting them before any domain:
 - `<zone_id>` The zone where the domain belongs to. (Required)
 - `<api_token>` Your API Token that have access to the zone. (Required)
 - `<interval>` The interval between each update.
+
+> [!NOTE]
+> By default, the config is placed right by the executable. You can specify the path of the config file by passing the `config=<path>` option.

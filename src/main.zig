@@ -98,18 +98,16 @@ pub fn main() !void {
 
 // Load the config.
 fn loadConfig (interface: *Interface, allocator: std.mem.Allocator) !Config {
+    const cwd_path = try std.fs.cwd().realpathAlloc(allocator, ".");
+    defer allocator.free(cwd_path);
+
     var config_path: []const u8 = undefined;
     defer allocator.free(config_path);
 
-    if (interface.countArguments() > 0) {
-        config_path = try allocator.dupe(u8, interface.getArgument(0));
+    if (interface.getOption("config")) |config| {
+        config_path = try std.fs.path.resolve(allocator, &.{cwd_path, config});
     } else {
-        config_path = switch (builtin.target.os.tag) {
-            .linux, .macos => try allocator.dupe(u8, "/etc/ddnuts.conf"),
-            .windows => try std.fs.cwd().realpathAlloc(allocator, "./ddnuts.conf"),
-
-            else => @panic("Unsupported Platform")
-        };
+        config_path = try std.fs.path.resolve(allocator, &.{cwd_path, "./ddnuts.conf"});
     }
     
     interface.log(.Running, "Loading the config: \"{s}\"", .{config_path});
@@ -142,7 +140,7 @@ fn loadConfig (interface: *Interface, allocator: std.mem.Allocator) !Config {
             \\# The zone where the domain belongs to.
             \\#
             \\# <api_token> (Required)
-            \\# Your API Token that have access to the zone. (https://dash.cloudflare.com/profile/api-tokens)
+            \\# Your API Token that have access to the zone.
             \\#
             \\# <interval> (Default to 10 minutes)
             \\# The interval between each update. Default to using ms, but other units are also supported: 1s (seconds), 1m (minutes), 1h (hours)
