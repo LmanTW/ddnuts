@@ -1,4 +1,4 @@
-name: Release
+name: Release ddnuts
 
 on:
   workflow_dispatch:
@@ -8,106 +8,30 @@ jobs:
     name: Release ddnuts
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout the Repository
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        uses: mlugg/setup-zig@v1
+        uses: mlugg/setup-zig@v2
         with:
           version: 0.14.1
 
       - name: Build ddnuts
-        run: zig build
+        run: |
+          zig build
+          bash ./pkg/bundle.sh
 
       - name: Gather Release Info
-        run: echo "TAG=v$(grep -m 1 -oE \"\.version[[:space:]]*=[[:space:]]*\"[^,]+" \"./build.zig.zon\" | grep -m 1 -oE \"[0-9]+([0-9]|\.)+\")" >> $GITHUB_ENV
+        run: |
+          TAG=$(grep -m 1 -oE "\.version[[:space:]]*=[[:space:]]*\"[^,]+" "./build.zig.zon" | grep -m 1 -oE "[0-9]+([0-9]|\.)+")
+          echo "TAG=v${TAG}" >> $GITHUB_ENV
 
       - name: Create the Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
-          body: A new release of ddnuts.,
-
-      - name: Upload ddnuts-linux-amd64
-        uses: svenstaro/upload-release-action@v2
+        uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-linux-amd64
-          asset_name: ddnuts-linux-amd64
-
-      - name: Upload ddnuts-linux-arm64
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-linux-arm64
-          asset_name: ddnuts-linux-arm64
-
-      - name: Upload ddnuts-linux-amd64.deb
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-linux-amd64.deb
-          asset_name: ddnuts-linux-amd64.deb
-
-      - name: Upload ddnuts-linux-arm64.deb
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-linux-arm64.deb
-          asset_name: ddnuts-linux-arm64.deb
-
-      - name: Upload ddnuts-macos-amd64
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-macos-amd64
-          asset_name: ddnuts-macos-amd64
-
-      - name: Upload ddnuts-macos-arm64
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-macos-arm64
-          asset_name: ddnuts-macos-arm64
-
-      - name: Upload ddnuts-windows-amd64
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-windows-amd64
-          asset_name: ddnuts-windows-amd64
-
-      - name: Upload ddnuts-windows-arm64
-        uses: svenstaro/upload-release-action@v2
-        with:
-          tag: ${{ env.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./zig-out/ddnuts-windows-arm64
-          asset_name: ddnuts-widows-arm64
-
-  release:
-    name: Release ddnuts
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout the Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Zig
-        uses: mlugg/setup-zig@v1
-        with:
-          version: 0.14.1
-
-      - name: Build the Project
-        run: zig build
+          artifacts: ./zig-out/*
