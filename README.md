@@ -1,6 +1,6 @@
 # ddnuts
 
-A lightweight tool for updating cloudflare DNS reords (DDNS).
+A lightweight tool for updating Cloudflare DNS records (DDNS).
 
 ```
 ddnuts ddnuts.com zone_id=... api_token=...

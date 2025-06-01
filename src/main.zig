@@ -18,7 +18,7 @@ pub fn main() !void {
 
     if (interface.countArguments() > 0 and std.mem.eql(u8, interface.getArgument(0), "help")) {
         interface.write(
-            \\A lightweight tool for updating cloudflare DNS reords (DDNS).
+            \\A lightweight tool for updating Cloudflare DNS records (DDNS).
             \\
             \\Usage:
             \\  ddnuts [...options]
